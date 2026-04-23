@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <title>VU-App - Unfallaufnahme</title>
+  <link rel="stylesheet" href="css/style.css?v=2">
+</head>
+<body>
+
+  <!-- ==================== PAGE: HOME ==================== -->
+  <div id="page-home" class="page active">
+    <div class="nav-bar">
+      <div class="nav-title">Unfallaufnahme</div>
+    </div>
+
+    <div class="id-header">
+      <div class="id-row">
+        <span class="id-label">Vorgangsnummer</span>
+        <span class="id-value" id="home-case-id"></span>
+      </div>
+      <div class="id-row">
+        <span class="id-label">Unfall-ID</span>
+        <span class="id-value" id="home-unfall-id"></span>
+      </div>
+    </div>
+
+    <div class="section-header">UNFALLDATEN</div>
+    <div class="card-group">
+      <div class="card-row">
+        <span class="row-label">Datum<span class="required">&#9679;</span></span>
+        <input type="date" id="unfall-datum" />
+      </div>
+      <div class="card-row">
+        <span class="row-label">Beginnzeit<span class="required">&#9679;</span></span>
+        <input type="time" id="unfall-beginnzeit" />
+      </div>
+      <div class="card-row">
+        <span class="row-label">Endzeit</span>
+        <input type="time" id="unfall-endzeit" placeholder="Optional" />
+      </div>
+      <div class="card-row">
+        <span class="row-label">Unfalltyp</span>
+        <select id="unfall-type">
+          <option value="">Auswahl</option>
+          <option value="abbiegeunfall">Abbiegeunfall</option>
+          <option value="auffahrunfall">Auffahrunfall</option>
+          <option value="kreuzungsunfall">Kreuzungsunfall</option>
+          <option value="sonstiger">Sonstiger</option>
+          <option value="alkoholDrogen">Alkohol/Drogen</option>
+          <option value="flucht">Flucht</option>
+        </select>
+      </div>
+      <div class="card-row">
+        <span class="row-label">Kategorie</span>
+        <select id="unfall-category">
+          <option value="">Auswahl</option>
+          <option value="unfallUnterEinfluss">Unfall unter Einfluss</option>
+          <option value="unfallflucht">Unfallflucht</option>
+          <option value="mitGetoeteten">mit Get&ouml;teten</option>
+          <option value="mitLeichtVerletzten">mit leicht Verletzten</option>
+          <option value="mitSchwerVerletzten">mit schwer Verletzten</option>
+          <option value="ohnePersonenschaden">ohne Personenschaden</option>
+          <option value="sonstige">sonstige</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="section-header">ORTLICHKEIT</div>
+    <div class="card-group">
+      <div class="card-row">
+        <span class="row-label">Stra&szlig;e<span class="required">&#9679;</span></span>
+        <input type="text" id="unfall-strasse" placeholder="Erforderlich" />
+      </div>
+      <div class="card-row">
+        <span class="row-label">Hausnummer</span>
+        <input type="text" id="unfall-hausnummer" placeholder="Optional" />
+      </div>
+      <div class="card-row">
+        <span class="row-label">PLZ<span class="required">&#9679;</span></span>
+        <input type="text" id="unfall-plz" placeholder="Erforderlich" />
+      </div>
+      <div class="card-row">
+        <span class="row-label">Ort<span class="required">&#9679;</span></span>
+        <input type="text" id="unfall-ort" placeholder="Erforderlich" />
+      </div>
+    </div>
+
+    <div class="section-header">KURZBESCHREIBUNG</div>
+    <div class="card-group">
+      <div class="description-header">
+        <span class="label">BESCHREIBUNG</span>
+        <span class="count" id="beschreibung-count">0 ZEICHEN</span>
+      </div>
+      <div class="card-row">
+        <textarea id="unfall-beschreibung" rows="4" placeholder="Beschreiben Sie den Unfallhergang..."></textarea>
+      </div>
+    </div>
+
+    <div class="section-header">BETEILIGTE PERSONEN</div>
+    <div class="card-group" id="personen-list">
+      <!-- Dynamically populated -->
+    </div>
+    <div class="card-group" style="margin-top: 8px;">
+      <div class="add-person-row" onclick="showAddPerson()">
+        <div class="add-person-icon">+</div>
+        <span>Person hinzuf&uuml;gen</span>
+      </div>
+    </div>
+
+    <div style="height: 24px;"></div>
+
+    <div class="bottom-button-container">
+      <button class="bottom-button" onclick="submitCase()">
+        Vorgang &uuml;bertragen
+      </button>
+    </div>
+  </div>
+
+  <!-- ==================== PAGE: ADD PERSON ==================== -->
+  <div id="page-add-person" class="page">
+    <div class="nav-bar">
+      <button class="nav-back" onclick="navigateTo('page-home')">Zur&uuml;ck</button>
+      <div>
+        <div class="nav-title">Personenaufnahme</div>
+      </div>
+    </div>
+
+    <div style="padding: 16px 20px;">
+      <div style="font-size: 22px; font-weight: 600;" id="person-header-name">Neue Person</div>
+      <div style="font-size: 13px; color: var(--ios-text-tertiary); margin-top: 2px;">Personendaten erfassen</div>
+    </div>
+
+    <div class="progress-container">
+      <div class="progress-label" id="person-progress-label">Angaben fehlen noch</div>
+      <div class="progress-hint">Bitte geben Sie m&ouml;glichst vollst&auml;ndige Information an.</div>
+      <div class="progress-bar"><div class="progress-fill" id="person-progress-fill" style="width: 0%"></div></div>
+    </div>
+
+    <div class="section-header">VORGANGSBETEILIGUNG</div>
+    <div class="card-group">
+      <div class="card-row tappable">
+        <span class="row-label">Rolle<span class="required">&#9679;</span></span>
+        <select id="person-rolle" style="text-align: right;">
+          <option value="">Erforderlich</option>
+          <option value="Fahrer">Fahrer</option>
+          <option value="Beifahrer">Beifahrer</option>
+          <option value="Fußgänger">Fu&szlig;g&auml;nger</option>
+          <option value="Radfahrer">Radfahrer</option>
+          <option value="Zeuge">Zeuge</option>
+          <option value="Geschädigter">Gesch&auml;digter</option>
+          <option value="Verursacher">Verursacher</option>
+        </select>
+        <span class="chevron">&#8250;</span>
+      </div>
+    </div>
+
+    <div class="section-header">PERSONALIEN</div>
+    <div class="card-group">
+      <div class="card-row">
+        <span class="row-label">Vorname<span class="required">&#9679;</span></span>
+        <input type="text" id="person-vorname" placeholder="Erforderlich" oninput="updatePersonHeader()" />
+      </div>
+      <div class="card-row">
+        <span class="row-label">Nachname<span class="required">&#9679;</span></span>
+        <input type="text" id="person-nachname" placeholder="Erforderlich" oninput="updatePersonHeader()" />
+      </div>
+      <div class="card-row">
+        <span class="row-label">Geburtsdatum<span class="required">&#9679;</span></span>
+        <input type="date" id="person-geburtsdatum" />
+      </div>
+    </div>
+
+    <div class="section-header">KONTAKT</div>
+    <div class="card-group">
+      <div class="card-row">
+        <span class="row-label">E-Mail</span>
+        <input type="email" id="person-email" placeholder="Optional" />
+      </div>
+    </div>
+
+    <div class="section-header">ADRESSE</div>
+    <div class="card-group">
+      <div class="card-row">
+        <span class="row-label">Adresse</span>
+        <input type="text" id="person-adresse" placeholder="Stra&szlig;e, PLZ, Ort" />
+      </div>
+    </div>
+
+    <div style="height: 24px;"></div>
+
+    <div class="bottom-button-container">
+      <button class="bottom-button" onclick="savePerson()">
+        Person speichern
+      </button>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL: Alert ==================== -->
+  <div class="modal-overlay" id="modal-alert">
+    <div class="modal-content">
+      <div class="modal-badge" id="modal-icon">!</div>
+      <h3 id="modal-title">Hinweis</h3>
+      <p id="modal-message"></p>
+      <button class="modal-button" onclick="closeModal()">OK</button>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL: Person Warning (Confirm) ==================== -->
+  <div class="modal-overlay" id="modal-suspicious">
+    <div class="modal-content">
+      <div class="modal-badge warning">!</div>
+      <h3>Hinweis zur Person</h3>
+      <p id="modal-suspicious-message"></p>
+      <button class="modal-button" onclick="confirmAddPerson()">Trotzdem hinzuf&uuml;gen</button>
+      <button class="modal-button secondary" onclick="cancelAddPerson()">Abbrechen</button>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL: Success ==================== -->
+  <div class="modal-overlay" id="modal-success">
+    <div class="modal-content">
+      <div class="modal-badge success">&#10003;</div>
+      <h3>Vorgang &uuml;bertragen</h3>
+      <p id="modal-success-message">Der Vorgang wurde erfolgreich an Celonis &uuml;bertragen.</p>
+      <button class="modal-button" onclick="closeSuccessAndReset()">Neuen Vorgang starten</button>
+    </div>
+  </div>
+
+  <!-- ==================== LOADING ==================== -->
+  <div class="loading-overlay" id="loading-overlay">
+    <div class="loading-box">
+      <div class="spinner"></div>
+      <div class="text" id="loading-text">Wird &uuml;berpr&uuml;ft...</div>
+    </div>
+  </div>
+
+  <script src="config.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
