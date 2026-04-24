@@ -51,6 +51,35 @@ function generateUnfallId() {
   return `${hex(7)}-${hex(4)}`;
 }
 
+// Build a Date from "YYYY-MM-DD" + "HH:MM". Returns null if either is missing.
+function buildLocalDate(dateStr, timeStr) {
+  if (!dateStr || !timeStr) return null;
+  const [y, mo, d] = dateStr.split('-').map(Number);
+  const [h, mi] = timeStr.split(':').map(Number);
+  return new Date(y, mo - 1, d, h, mi, 0, 0);
+}
+
+// e.g. "Fri Mar 13 2026 12:39:09 GMT+0100 (Central European Standard Time)"
+function formatDateLong(dateStr, timeStr) {
+  const d = buildLocalDate(dateStr, timeStr);
+  return d ? d.toString() : '';
+}
+
+// e.g. "2026-03-04T12:00:00+01:00"
+function formatIsoWithOffset(dateStr, timeStr) {
+  const d = buildLocalDate(dateStr, timeStr);
+  if (!d) return '';
+  const pad = (n) => String(n).padStart(2, '0');
+  const tzMinTotal = -d.getTimezoneOffset(); // e.g. +60 for CET
+  const sign = tzMinTotal >= 0 ? '+' : '-';
+  const abs = Math.abs(tzMinTotal);
+  const tzH = pad(Math.floor(abs / 60));
+  const tzM = pad(abs % 60);
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}` +
+         `T${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}` +
+         `${sign}${tzH}:${tzM}`;
+}
+
 // ==================== PERSON MANAGEMENT ====================
 function showAddPerson() {
   state.editingPersonIndex = null;
@@ -310,9 +339,9 @@ async function submitCase() {
     case_id: state.caseId,
     unfall_id: state.unfallId,
     accident: {
-      date: document.getElementById('unfall-datum').value,
-      beginnzeit: document.getElementById('unfall-beginnzeit').value,
-      endzeit: document.getElementById('unfall-endzeit').value,
+      date: formatDateLong(document.getElementById('unfall-datum').value, document.getElementById('unfall-beginnzeit').value),
+      beginnzeit: formatIsoWithOffset(document.getElementById('unfall-datum').value, document.getElementById('unfall-beginnzeit').value),
+      endzeit: formatIsoWithOffset(document.getElementById('unfall-datum').value, document.getElementById('unfall-endzeit').value),
       unfalltype: document.getElementById('unfall-type').value,
       unfallcategory: document.getElementById('unfall-category').value,
       description: document.getElementById('unfall-beschreibung').value.trim(),
