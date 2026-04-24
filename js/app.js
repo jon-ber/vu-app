@@ -59,10 +59,10 @@ function buildLocalDate(dateStr, timeStr) {
   return new Date(y, mo - 1, d, h, mi, 0, 0);
 }
 
-// e.g. "Fri Mar 13 2026 12:39:09 GMT+0100 (Central European Standard Time)"
+// e.g. "2026-03-13T13:16:28.000Z"
 function formatDateLong(dateStr, timeStr) {
   const d = buildLocalDate(dateStr, timeStr);
-  return d ? d.toString() : '';
+  return d ? d.toISOString() : '';
 }
 
 // e.g. "2026-03-04T12:00:00+01:00"
@@ -179,7 +179,7 @@ async function savePerson() {
 async function runPersonenabfrage(personData) {
   const payload = {
     type: "personenabfrage",
-    case_id: state.caseId,
+    case_id: state.caseId.replace(/^HE-/, ''),
     unfall_id: state.unfallId,
     person: {
       first_name: personData.vorname,
@@ -336,7 +336,8 @@ async function submitCase() {
 
   const payload = {
     type: "verkehrsunfall",
-    case_id: state.caseId,
+    // Strip the "HE-" prefix from the Vorgangsnummer before sending
+    case_id: state.caseId.replace(/^HE-/, ''),
     unfall_id: state.unfallId,
     accident: {
       date: formatDateLong(document.getElementById('unfall-datum').value, document.getElementById('unfall-beginnzeit').value),
